@@ -27,7 +27,7 @@ class ProjetoController extends Controller
             'equipments' => 'nullable|string',
             'accepted' => 'boolean',
             'hasPrototype' => 'boolean',
-            'persons' => 'required|array|max:3',
+            'persons' => 'required|array|max:4',
             'persons.*' => 'integer|exists:users,id',
         ]);
 
@@ -70,7 +70,7 @@ class ProjetoController extends Controller
             'equipments' => 'nullable|string',
             'accepted' => 'boolean',
             'hasPrototype' => 'boolean',
-            'persons' => 'required|array|max:3',
+            'persons' => 'required|array|max:4',
             'persons.*' => 'integer|exists:users,id',
         ]);
 
