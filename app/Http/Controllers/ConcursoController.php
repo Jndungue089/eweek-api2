@@ -37,7 +37,7 @@ class ConcursoController extends Controller
 
     public function show($id)
     {
-        $concurso = Concurso::findOrFail($id);
+        $concurso = Concurso::with('users')->findOrFail($id);
         return response()->json($concurso);
     }
 

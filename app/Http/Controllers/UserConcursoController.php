@@ -22,6 +22,27 @@ class UserConcursoController extends Controller
             'concursoId' => 'required|exists:concursos,id'
         ]);
 
+        // Verifica o número de inscrições existentes para esse concurso
+        $inscricoesCount = UserConcurso::where('concursoId', $validated['concursoId'])->count();
+
+        if ($inscricoesCount >= 14) {
+            return response()->json([
+                'message' => 'Não há mais vagas disponíveis'
+            ], 400); // Código 400 para Bad Request
+        }
+
+        // Verifica se o usuário já está inscrito no concurso
+        $jaInscrito = UserConcurso::where('userId', $userId)
+            ->where('concursoId', $validated['concursoId'])
+            ->exists();
+
+        if ($jaInscrito) {
+            return response()->json([
+                'message' => 'Você já está inscrito neste concurso'
+            ], 409); // Código 409 para Conflict
+        }
+
+        // Realiza a inscrição
         $userConcurso = UserConcurso::create([
             'userId' => $userId,
             'concursoId' => $validated['concursoId']
@@ -33,11 +54,12 @@ class UserConcursoController extends Controller
         ], 201);
     }
 
+
     public function show($userId, $concursoId)
     {
         $userConcurso = UserConcurso::where('userId', $userId)
-                              ->where('concursoId', $concursoId)
-                              ->first();
+            ->where('concursoId', $concursoId)
+            ->first();
 
         if (!$userConcurso) {
             return response()->json(['message' => 'Inscrição não encontrada'], 404);
@@ -53,8 +75,8 @@ class UserConcursoController extends Controller
         ]);
 
         $userConcurso = UserConcurso::where('userId', $userId)
-                              ->where('concursoId', $concursoId)
-                              ->first();
+            ->where('concursoId', $concursoId)
+            ->first();
 
         if (!$userConcurso) {
             return response()->json(['message' => 'Inscrição não encontrada'], 404);
@@ -68,8 +90,8 @@ class UserConcursoController extends Controller
     public function destroy($userId, $concursoId)
     {
         $userConcurso = UserConcurso::where('userId', $userId)
-                              ->where('concursoId', $concursoId)
-                              ->first();
+            ->where('concursoId', $concursoId)
+            ->first();
 
         if (!$userConcurso) {
             return response()->json(['message' => 'Inscrição não encontrada'], 404);

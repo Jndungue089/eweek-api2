@@ -47,11 +47,11 @@ class CursoController extends Controller
         return response()->json(['message' => 'Curso criado com sucesso!', "curso" => $curso], 202);
     }
 
-public function show($id)
-{
-    $curso = Curso::with('users')->findOrFail($id);
-    return response()->json($curso, 200);
-}
+    public function show($id)
+    {
+        $curso = Curso::with('users')->findOrFail($id);
+        return response()->json($curso, 200);
+    }
 
 
     public function update(Request $request, $id)
@@ -86,7 +86,7 @@ public function show($id)
         $curso = Curso::findOrFail($id);
         $curso->delete();
         $user = $request->user();
-        $userCurso = UserCurso::where('cursoId', $id)->where('userId', $user->id )->get();
+        $userCurso = UserCurso::where('cursoId', $id)->where('userId', $user->id)->get();
         return response()->json(['message' => 'Curso deletado com sucesso']);
     }
 }
