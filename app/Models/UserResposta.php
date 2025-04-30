@@ -11,4 +11,10 @@ class UserResposta extends Model
         'userId',
         'answerId'
     ];
+
+    public function resposta()
+{
+    return $this->belongsTo(Resposta::class, 'answerId');
+}
+
 }

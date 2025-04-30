@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserResposta;
 use Illuminate\Http\Request;
 
@@ -10,8 +11,35 @@ class UserRespostaController extends Controller
     //
     public function index($userId)
     {
-        $userRespostas = UserResposta::where('userId', $userId)->get();
-        return response()->json($userRespostas);
+        $usuarios = User::with([
+            'userRespostas.resposta.questao'
+        ])->get();
+    
+        $resultado = $usuarios->map(function ($user) {
+            return [
+                'user' => [
+                    'id' => $user->id,
+                    'fullName' => $user->fullName,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'course' => $user->course,
+                    'school' => $user->school,
+                    'grade' => $user->grade,
+                    'age_range' => $user->age_range,
+                    'gender' => $user->gender,
+                    'profile' => $user->profile,
+                    // adicione outros campos se necessário
+                ],
+                'respostas' => $user->userRespostas->map(function ($userResposta) {
+                    return [
+                        'questao' => $userResposta->resposta->questao->question ?? null,
+                        'resposta' => $userResposta->resposta->answer ?? null,
+                    ];
+                }),
+            ];
+        });
+    
+        return response()->json($resultado);
     }
 
     // Inscrever um usuário num curso
@@ -78,4 +106,21 @@ class UserRespostaController extends Controller
 
         return response()->json(['message' => 'Resposta de usuário deletada com sucesso']);
     }
+
+    public function getQuestoesComRespostasPorUsuario($userId)
+{
+    $userRespostas = UserResposta::with(['resposta.questao'])
+        ->where('userId', $userId)
+        ->get();
+
+    $resultado = $userRespostas->map(function ($userResposta) {
+        return [
+            'questao' => $userResposta->resposta->questao->question ?? null,
+            'resposta' => $userResposta->resposta->answer ?? null,
+        ];
+    });
+
+    return response()->json($resultado);
+}
+
 }

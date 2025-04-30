@@ -11,7 +11,7 @@ class ConcursoController extends Controller
     //
     public function index()
     {
-        $concursos = Concurso::all();
+        $concursos = Concurso::with('users')->get();
         if (!$concursos) {
             return response()->json(['message' => 'Não há concursos cadastrados'], 200);
         }

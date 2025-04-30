@@ -11,7 +11,7 @@ class CursoController extends Controller
     //
     public function index()
     {
-        $cursos = Curso::all();
+        $cursos = Curso::with('users')->get();
         if (!$cursos) {
             return response()->json(['message' => 'Não há cursos cadastrados'], 200);
         }
@@ -49,7 +49,7 @@ class CursoController extends Controller
 
     public function show($id)
     {
-        $curso = Curso::findOrFail($id);
+        $curso = Curso::with(['user_cursos', 'users'])->findOrFail($id);
         return response()->json($curso);
     }
 

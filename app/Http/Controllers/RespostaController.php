@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Resposta;
+use App\Models\User;
 use App\Models\UserResposta;
 use Illuminate\Http\Request;
 
@@ -11,13 +12,17 @@ class RespostaController extends Controller
     //
     public function index()
     {
-        $respostas = Resposta::all();
-        if (!$respostas) {
+        $respostas = User::whereHas('respostas') // apenas usuários com respostas
+            ->with(['respostas.question'])       // carrega as respostas e suas questões
+            ->get();
+    
+        if ($respostas->isEmpty()) {
             return response()->json(['message' => 'Não há respostas cadastradas'], 200);
         }
+    
         return response()->json($respostas, 200);
     }
-
+    
     public function store(Request $request)
     {
         $validated = $request->validate([

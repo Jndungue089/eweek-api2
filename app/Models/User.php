@@ -57,4 +57,19 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Projeto::class, 'projeto_user', 'userId', 'projetoId');
     }
+    public function concursos()
+    {
+        return $this->belongsToMany(Concurso::class, 'user_concursos', 'userId', 'concursoId');
+    }
+    public function cursos()
+    {
+        return $this->belongsToMany(Curso::class, 'user_cursos', 'userId', 'cursoId');
+    }
+
+    public function respostas()
+    {
+        return $this->belongsToMany(Resposta::class, 'user_respostas', 'userId', 'answerId')
+                    ->with('question'); // incluir a questão associada à resposta
+    }
+    
 }

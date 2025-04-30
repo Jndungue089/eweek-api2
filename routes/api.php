@@ -61,6 +61,7 @@ Route::prefix('users/{userId}/resposta')->group(function () {
     Route::post('/', [UserRespostaController::class, 'store']);
     Route::put('/{id}', [UserRespostaController::class, 'update']);
     Route::delete('/{id}', [UserRespostaController::class, 'destroy']);
+    Route::get('/', [UserRespostaController::class, 'getQuestoesComRespostasPorUsuario']);
 });
 
 // Questão

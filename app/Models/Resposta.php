@@ -11,4 +11,10 @@ class Resposta extends Model
         'answer',
         'questionId'
     ];
+
+    public function question()
+    {
+        return $this->belongsTo(Questao::class, 'questionId');
+    }
+
 }

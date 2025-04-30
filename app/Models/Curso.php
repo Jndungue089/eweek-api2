@@ -20,4 +20,10 @@ class Curso extends Model
         'end',
         'isFull'
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_cursos', 'cursoId', 'userId')
+        ->withPivot('created_at', 'updated_at');;
+    }
 }
