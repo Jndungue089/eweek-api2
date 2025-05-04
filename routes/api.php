@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnonymousController;
 use App\Http\Controllers\ConcursoController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\PalestraController;
@@ -73,10 +74,17 @@ Route::prefix('questao')->group(function () {
 // Resposta
 Route::prefix('resposta')->group(function () {
     Route::get('/', [RespostaController::class, 'index']);
-    Route::get('/anonymous', [RespostaController::class, 'anonymous']); // <-- Coloque esta antes
     Route::get('/{id}', [RespostaController::class, 'show']);
     Route::post('/', [RespostaController::class, 'store']);
     Route::put('/{id}', [RespostaController::class, 'update']);
+});
+// Mensagens anónimas
+Route::prefix('anonymous')->group(function () {
+    Route::get('/', [AnonymousController::class, 'index']);
+    Route::get('/{id}', [AnonymousController::class, 'show']);
+    Route::post('/', [AnonymousController::class, 'store']);
+    Route::put('/{id}', [AnonymousController::class, 'update']);
+    Route::delete('/{id}', [AnonymousController::class, 'destroy']);
 });
 
 

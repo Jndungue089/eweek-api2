@@ -23,37 +23,23 @@ class RespostaController extends Controller
         return response()->json($respostas, 200);
     }
 
-    public function anonymous()
-    {
-        $respostas = Resposta::whereDoesntHave('userRespostas')->get();
-
-        if ($respostas->isEmpty()) {
-            return response()->json(['message' => 'Não há respostas cadastradas'], 200);
-        }
-
-        return response()->json($respostas, 200);
-    }
-
-
     public function store(Request $request)
     {
         $validated = $request->validate([
             'answer' => 'required|string|max:255',
             'questionId' => 'required|exists:questaos,id',
-            'userId' => 'nullable|integer|exists:users,id',
+            'userId' => 'required|integer|exists:users,id',
         ]);
-        
+
 
         $resposta = Resposta::create([
             'answer' => $validated['answer'],
             'questionId' => $validated['questionId'],
         ]);
-        if (!empty($validated['userId']) && $validated['userId'] != 0) {
-            UserResposta::create([
-                'userId' => $validated['userId'],
-                'answerId' => $resposta->id,
-            ]);
-        }
+        UserResposta::create([
+            'userId' => $validated['userId'],
+            'answerId' => $resposta->id,
+        ]);
 
         return response()->json(['message' => 'Resposta criada com sucesso!', "resposta" => $resposta], 202);
     }
