@@ -15,14 +15,26 @@ class RespostaController extends Controller
         $respostas = User::whereHas('respostas') // apenas usuários com respostas
             ->with(['respostas.question'])       // carrega as respostas e suas questões
             ->get();
-    
+
         if ($respostas->isEmpty()) {
             return response()->json(['message' => 'Não há respostas cadastradas'], 200);
         }
-    
+
         return response()->json($respostas, 200);
     }
-    
+
+    public function anonymous()
+    {
+        $respostas = Resposta::find(0)->get();
+
+        if ($respostas->isEmpty()) {
+            return response()->json(['message' => 'Não há respostas cadastradas'], 200);
+        }
+
+        return response()->json($respostas, 200);
+    }
+
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -35,11 +47,14 @@ class RespostaController extends Controller
             'answer' => $validated['answer'],
             'questionId' => $validated['questionId'],
         ]);
-        // Cria relação com o usuário
-        $userResposta = UserResposta::create([
-            'userId' => $validated['userId'],
-            'answerId' => $resposta->id,
-        ]);
+        if ($request->userId) {
+            // Cria relação com o usuário
+            $userResposta = UserResposta::create([
+                'userId' => $validated['userId'],
+                'answerId' => $resposta->id,
+            ]);
+        }
+
         return response()->json(['message' => 'Resposta criada com sucesso!', "resposta" => $resposta], 202);
     }
 
