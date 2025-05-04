@@ -47,7 +47,7 @@ class RespostaController extends Controller
             'answer' => $validated['answer'],
             'questionId' => $validated['questionId'],
         ]);
-        if ($request->userId) {
+        if ($request->userId != 0) {
             // Cria relação com o usuário
             $userResposta = UserResposta::create([
                 'userId' => $validated['userId'],
