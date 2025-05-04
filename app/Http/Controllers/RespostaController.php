@@ -25,7 +25,7 @@ class RespostaController extends Controller
 
     public function anonymous()
     {
-        $respostas = Resposta::findOrFail(0)->all();
+        $respostas = Resposta::where('questionId', 0)->all();
 
         if ($respostas->isEmpty()) {
             return response()->json(['message' => 'Não há respostas cadastradas'], 200);
