@@ -25,7 +25,7 @@ class RespostaController extends Controller
 
     public function anonymous()
     {
-        $respostas = Resposta::where('questionId', 0)->all();
+        $respostas = Resposta::whereDoesntHave('userRespostas')->get();
 
         if ($respostas->isEmpty()) {
             return response()->json(['message' => 'Não há respostas cadastradas'], 200);
@@ -40,16 +40,16 @@ class RespostaController extends Controller
         $validated = $request->validate([
             'answer' => 'required|string|max:255',
             'questionId' => 'required|exists:questaos,id',
-            'userId' => 'required|exists:users,id',
+            'userId' => 'nullable|integer|exists:users,id',
         ]);
+        
 
         $resposta = Resposta::create([
             'answer' => $validated['answer'],
             'questionId' => $validated['questionId'],
         ]);
-        if ($request->userId != 0) {
-            // Cria relação com o usuário
-            $userResposta = UserResposta::create([
+        if (!empty($validated['userId']) && $validated['userId'] != 0) {
+            UserResposta::create([
                 'userId' => $validated['userId'],
                 'answerId' => $resposta->id,
             ]);

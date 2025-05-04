@@ -73,11 +73,12 @@ Route::prefix('questao')->group(function () {
 // Resposta
 Route::prefix('resposta')->group(function () {
     Route::get('/', [RespostaController::class, 'index']);
+    Route::get('/anonymous', [RespostaController::class, 'anonymous']); // <-- Coloque esta antes
     Route::get('/{id}', [RespostaController::class, 'show']);
     Route::post('/', [RespostaController::class, 'store']);
     Route::put('/{id}', [RespostaController::class, 'update']);
-    Route::get('/anonymous', [RespostaController::class, 'anonymous']);
 });
+
 
 
 /*

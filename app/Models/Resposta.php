@@ -17,4 +17,8 @@ class Resposta extends Model
         return $this->belongsTo(Questao::class, 'questionId');
     }
 
+    public function userRespostas()
+    {
+        return $this->hasMany(UserResposta::class, 'answerId');
+    }
 }
