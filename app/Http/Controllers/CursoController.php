@@ -57,6 +57,7 @@ class CursoController extends Controller
     public function update(Request $request, $id)
     {
         $curso = Curso::findOrFail($id);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
@@ -68,6 +69,10 @@ class CursoController extends Controller
             'end' => 'required',
             'isFull' => 'required',
         ]);
+        if($validated['amount'] > $validated['subscriptions']){
+            $validated['isFull'] = false;
+            $validated['available'] = $validated['amount'] - $validated['subscriptions'];
+        }
         $curso->update(array_filter([
             'title' => $validated['title'],
             'description' => $validated['description'],
