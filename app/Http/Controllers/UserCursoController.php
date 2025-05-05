@@ -47,8 +47,8 @@ class UserCursoController extends Controller
     public function show($userId, $cursoId)
     {
         $userCurso = UserCurso::where('userId', $userId)
-                              ->where('cursoId', $cursoId)
-                              ->first();
+            ->where('cursoId', $cursoId)
+            ->first();
 
         if (!$userCurso) {
             return response()->json(['message' => 'Inscrição não encontrada'], 404);
@@ -64,8 +64,8 @@ class UserCursoController extends Controller
         ]);
 
         $userCurso = UserCurso::where('userId', $userId)
-                              ->where('cursoId', $cursoId)
-                              ->first();
+            ->where('cursoId', $cursoId)
+            ->first();
 
         if (!$userCurso) {
             return response()->json(['message' => 'Inscrição não encontrada'], 404);
@@ -73,14 +73,23 @@ class UserCursoController extends Controller
 
         $userCurso->update(['cursoId' => $validated['cursoId']]);
 
+        // Atualizar o número de inscrições no curso novo
+        $curso = Curso::find($validated['cursoId']);
+        $totalSubscriptions = UserCurso::where('cursoId', $curso->id)->count();
+        $curso->subscriptions = $totalSubscriptions;
+        $curso->available = max(0, $curso->amount - $totalSubscriptions);
+        $curso->isFull = $totalSubscriptions >= $curso->amount;
+        $curso->save();
+
         return response()->json(['message' => 'Inscrição atualizada!', 'data' => $userCurso]);
     }
+
 
     public function destroy($userId, $cursoId)
     {
         $userCurso = UserCurso::where('userId', $userId)
-                              ->where('cursoId', $cursoId)
-                              ->first();
+            ->where('cursoId', $cursoId)
+            ->first();
 
         if (!$userCurso) {
             return response()->json(['message' => 'Inscrição não encontrada'], 404);

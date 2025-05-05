@@ -69,7 +69,7 @@ class CursoController extends Controller
         ]);
     
         // Lógica derivada
-        $available = max(0, $validated['amount'] - $curso->subscriptions);
+        $available = max(0, $validated['amount'] - $validated['subscriptions']);
         $isFull = $validated['subscriptions'] >= $validated['amount'];
     
         // Atualiza o curso
