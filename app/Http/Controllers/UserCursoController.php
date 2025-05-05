@@ -23,19 +23,31 @@ class UserCursoController extends Controller
 
         $curso = Curso::find($validated['cursoId']);
 
-        if (!$curso || $curso->isFull) {
+        // Recalcular inscrições em tempo real
+        $totalSubscriptions = UserCurso::where('cursoId', $curso->id)->count();
+        if ($totalSubscriptions >= $curso->amount) {
             return response()->json(['message' => 'O curso está lotado.'], 400);
+        }
+
+        // Verifica se o usuário já está inscrito
+        $exists = UserCurso::where('userId', $userId)
+            ->where('cursoId', $curso->id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['message' => 'Usuário já inscrito neste curso.'], 409);
         }
 
         $userCurso = UserCurso::create([
             'userId' => $userId,
-            'cursoId' => $validated['cursoId']
+            'cursoId' => $curso->id
         ]);
 
-        // Atualiza dados do curso
-        $curso->subscriptions += 1;
-        $curso->available -= 1;
-        $curso->isFull = $curso->subscriptions >= $curso->amount;
+        // Atualiza o curso com base nos dados reais
+        $totalSubscriptions += 1;
+        $curso->subscriptions = $totalSubscriptions;
+        $curso->available = max(0, $curso->amount - $totalSubscriptions);
+        $curso->isFull = $totalSubscriptions >= $curso->amount;
         $curso->save();
 
         return response()->json([
@@ -43,6 +55,7 @@ class UserCursoController extends Controller
             'data' => $userCurso
         ], 201);
     }
+
 
     public function show($userId, $cursoId)
     {
@@ -99,9 +112,10 @@ class UserCursoController extends Controller
 
         $curso = Curso::find($cursoId);
         if ($curso) {
-            $curso->subscriptions -= 1;
-            $curso->available += 1;
-            $curso->isFull = $curso->subscriptions >= $curso->amount;
+            $totalSubscriptions = UserCurso::where('cursoId', $curso->id)->count();
+            $curso->subscriptions = $totalSubscriptions;
+            $curso->available = max(0, $curso->amount - $totalSubscriptions);
+            $curso->isFull = $totalSubscriptions >= $curso->amount;
             $curso->save();
         }
 
