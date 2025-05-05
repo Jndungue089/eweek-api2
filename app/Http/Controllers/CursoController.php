@@ -69,21 +69,26 @@ class CursoController extends Controller
             'end' => 'required',
             'isFull' => 'required',
         ]);
-        if($validated['amount'] > $validated['subscriptions']){
+        if ($validated['amount'] > $validated['subscriptions']) {
             $validated['isFull'] = false;
-            $validated['available'] = $validated['amount'] - $curso->subscriptions;
+            $validated['available'] = $validated['amount'] - $validated['subscriptions'];
+        } else {
+            $validated['isFull'] = true;
+            $validated['available'] = 0;
         }
-        $curso->update(array_filter([
+        
+        $curso->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'available' => $validated['available'] = $validated['amount'] - $curso->subscriptions,
+            'available' => $validated['available'],
             'amount' => $validated['amount'],
             'subscriptions' => $validated['subscriptions'],
             'place' => $validated['place'],
             'start' => $validated['start'],
             'end' => $validated['end'],
             'isFull' => $validated['isFull'],
-        ]));
+        ]);
+        
         return response()->json(['message' => 'Curso atualizdado com sucesso!', 'curso' => $curso]);
     }
     public function destroy(Request $request, $id)
