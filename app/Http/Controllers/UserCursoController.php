@@ -37,6 +37,12 @@ class UserCursoController extends Controller
         if ($exists) {
             return response()->json(['message' => 'Usuário já inscrito neste curso.'], 409);
         }
+        $another = UserCurso::where('userId', $userId)
+            ->exists();
+
+        if ($another) {
+            return response()->json(['message' => 'Usuário já inscrito noutro curso. Apenas se inscreva em um curso'], 409);
+        }
 
         $userCurso = UserCurso::create([
             'userId' => $userId,

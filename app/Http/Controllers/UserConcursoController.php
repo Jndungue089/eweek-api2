@@ -41,6 +41,14 @@ class UserConcursoController extends Controller
                 'message' => 'Você já está inscrito neste concurso'
             ], 409); // Código 409 para Conflict
         }
+        $another = UserConcurso::where('userId', $userId)
+            ->exists();
+
+        if ($another) {
+            return response()->json([
+                'message' => 'Você já está inscrito noutro concurso'
+            ], 409); // Código 409 para Conflict
+        }
 
         // Realiza a inscrição
         $userConcurso = UserConcurso::create([
