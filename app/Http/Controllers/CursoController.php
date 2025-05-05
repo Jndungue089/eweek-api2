@@ -76,7 +76,7 @@ class CursoController extends Controller
         $curso->update(array_filter([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'available' => $validated['available'],
+            'available' => $validated['available'] = $validated['amount'] - $curso->subscriptions,
             'amount' => $validated['amount'],
             'subscriptions' => $validated['subscriptions'],
             'place' => $validated['place'],
