@@ -71,7 +71,7 @@ class CursoController extends Controller
         ]);
         if($validated['amount'] > $validated['subscriptions']){
             $validated['isFull'] = false;
-            $validated['available'] = $validated['amount'] - $validated['subscriptions'];
+            $validated['available'] = $validated['amount'] - $curso->subscriptions;
         }
         $curso->update(array_filter([
             'title' => $validated['title'],
