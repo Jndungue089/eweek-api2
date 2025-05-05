@@ -77,6 +77,7 @@ Route::prefix('resposta')->group(function () {
     Route::get('/{id}', [RespostaController::class, 'show']);
     Route::post('/', [RespostaController::class, 'store']);
     Route::put('/{id}', [RespostaController::class, 'update']);
+    Route::delete('/{id}', [RespostaController::class, 'destroy']);
 });
 // Mensagens anónimas
 Route::prefix('anonymous')->group(function () {
