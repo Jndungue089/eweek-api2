@@ -78,7 +78,7 @@ class CursoController extends Controller
             'description' => $validated['description'],
             'available' => $available,
             'amount' => $validated['amount'],
-            'subscriptions' => $validated['subscriptions'],
+            // 'subscriptions' => $validated['subscriptions'],
             'place' => $validated['place'],
             'start' => $validated['start'],
             'end' => $validated['end'],

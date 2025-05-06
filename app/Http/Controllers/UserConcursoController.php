@@ -25,7 +25,7 @@ class UserConcursoController extends Controller
         // Verifica o número de inscrições existentes para esse concurso
         $inscricoesCount = UserConcurso::where('concursoId', $validated['concursoId'])->count();
 
-        if ($inscricoesCount >= 14) {
+        if ($inscricoesCount >= 30) {
             return response()->json([
                 'message' => 'Não há mais vagas disponíveis'
             ], 400); // Código 400 para Bad Request
