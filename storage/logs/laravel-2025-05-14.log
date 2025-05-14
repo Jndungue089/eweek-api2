@@ -642,3 +642,19 @@ HINT:  Perhaps you meant to reference the column \"votes.concursoId\". at C:\\Us
 #62 C:\\Users\\User\\OneDrive\\Documentos\\ITEL\\eletronic_week\\eweek-api2\\server.php(21): require_once('...')
 #63 {main}
 "} 
+[2025-05-14 13:04:15] local.ERROR: Cannot use empty array elements in arrays {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use empty array elements in arrays at C:\\Users\\User\\OneDrive\\Documentos\\ITEL\\eletronic_week\\eweek-api2\\app\\Http\\Controllers\\VoteController.php:48)
+[stacktrace]
+#0 {main}
+"} 
+[2025-05-14 13:31:39] local.ERROR: Cannot use empty array elements in arrays {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use empty array elements in arrays at C:\\Users\\User\\OneDrive\\Documentos\\ITEL\\eletronic_week\\eweek-api2\\app\\Http\\Controllers\\VoteController.php:48)
+[stacktrace]
+#0 {main}
+"} 
+[2025-05-14 13:33:13] local.ERROR: Cannot use empty array elements in arrays {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use empty array elements in arrays at C:\\Users\\User\\OneDrive\\Documentos\\ITEL\\eletronic_week\\eweek-api2\\app\\Http\\Controllers\\VoteController.php:48)
+[stacktrace]
+#0 {main}
+"} 
+[2025-05-14 13:33:34] local.ERROR: Cannot use empty array elements in arrays {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use empty array elements in arrays at C:\\Users\\User\\OneDrive\\Documentos\\ITEL\\eletronic_week\\eweek-api2\\app\\Http\\Controllers\\VoteController.php:48)
+[stacktrace]
+#0 {main}
+"} 
