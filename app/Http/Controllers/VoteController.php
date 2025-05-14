@@ -52,6 +52,7 @@ class VoteController extends Controller
 
             $votantes = $concurso->votos->map(function ($voto) {
                 return [
+                    'id' => optional($voto)->id,
                     'voter_id' => optional($voto->voter)->id,
                     'voter_nome' => optional($voto->voter)->fullName ?? 'Usuário removido',
                     'voter_email' => optional($voto->voter)->email ?? 'Email indisponível',
