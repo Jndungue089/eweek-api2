@@ -10,17 +10,21 @@ class Vote extends Model
     //
     use HasFactory;
 
-    protected $fillable = ['userId', 'concursoId'];
+    protected $fillable = ['voterId', 'votedId', 'concursoId'];
 
-    public function user()
+    public function voter()
     {
-        return $this->belongsTo(User::class, 'userId');
+        return $this->belongsTo(User::class, 'voterId');
     }
-    
+
+    public function votedUser()
+    {
+        return $this->belongsTo(User::class, 'votedId');
+    }
 
     public function concurso()
     {
         return $this->belongsTo(Concurso::class, 'concursoId');
     }
-    
+
 }

@@ -9,20 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+   public function up(): void
     {
         Schema::create('votes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('userId')->constrained('users')->onDelete('cascade');
+            $table->foreignId('voterId')->constrained('users')->onDelete('cascade');
+            $table->foreignId('votedId')->constrained('users')->onDelete('cascade');
             $table->foreignId('concursoId')->constrained('concursos')->onDelete('cascade');
             $table->timestamps();
-            $table->unique(['userId', 'concursoId']);
+            $table->unique(['voterId', 'concursoId']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('votes');

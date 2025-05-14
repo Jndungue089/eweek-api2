@@ -177,8 +177,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [QuestaoController::class, 'update']);
         Route::delete('/{id}', [QuestaoController::class, 'destroy']);
     });
-    Route::post('/concursos/{concursoId}/votar/{userId}', [VoteController::class, 'votar']);
 
-    // Rota para obter o número de votos de um concurso
-    Route::get('/concursos/{concursoId}/votos', [VoteController::class, 'votos']);
+Route::post('/concursos/{concursoId}/votar/{voterId}/{votedId}', [VoteController::class, 'votar']);
+Route::get('/concursos/{concursoId}/votos', [VoteController::class, 'votos']);
 });
