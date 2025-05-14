@@ -71,5 +71,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Resposta::class, 'user_respostas', 'userId', 'answerId')
                     ->with('question'); // incluir a questão associada à resposta
     }
+
+    public function votos()
+{
+    return $this->hasMany(Vote::class);
+}
+
     
 }

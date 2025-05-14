@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCursoController;
 use App\Http\Controllers\UserProjetosController;
 use App\Http\Controllers\UserRespostaController;
+use App\Http\Controllers\VoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -176,4 +177,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [QuestaoController::class, 'update']);
         Route::delete('/{id}', [QuestaoController::class, 'destroy']);
     });
+    Route::post('/concursos/{concursoId}/votar/{userId}', [VoteController::class, 'votar']);
+
+    // Rota para obter o número de votos de um concurso
+    Route::get('/concursos/{concursoId}/votos', [VoteController::class, 'votos']);
 });
