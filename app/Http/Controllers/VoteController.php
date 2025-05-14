@@ -82,4 +82,18 @@ class VoteController extends Controller
             return response()->json(['message' => 'Erro inesperado.', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function destroy(Request $request, $id){
+        try {
+            $vote = Vote::findOrFail($id);
+            $vote->delete();
+            return response()->json(['message'=> 'Voto cancelado com sucesso'],200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message'=> 'Erro: '.$e->getMessage()],404);
+        } catch (QueryException $e) {
+            return response()->json(['message'=> 'Erro: '.$e->getMessage()],500);
+        } catch (Exception $e) {
+            return response()->json(['message'=> 'Erro: '.$e->getMessage()], 405);
+        }
+    }
 }
