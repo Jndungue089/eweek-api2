@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Projeto extends Model
 {
-    //
     use HasFactory;
+
     protected $fillable = [
         'name',
         'description',
@@ -22,8 +22,14 @@ class Projeto extends Model
         'accepted' => 'boolean',
         'hasPrototype' => 'boolean',
     ];
+
     public function persons()
     {
         return $this->belongsToMany(User::class, 'projeto_user', 'projetoId', 'userId');
+    }
+
+    public function votos()
+    {
+        return $this->hasMany(Vote::class, 'projectId');
     }
 }

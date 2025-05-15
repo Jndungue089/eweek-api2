@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Concurso;
 use App\Models\UserConcurso;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ConcursoController extends Controller
@@ -63,5 +65,54 @@ class ConcursoController extends Controller
         $user = $request->user();
         $userConcurso = UserConcurso::where('concursoId', $id)->where('userId', $user->id )->get();
         return response()->json(['message' => 'Concurso deletado com sucesso']);
+    }
+    /**
+     * Atualiza o período de votação de um concurso.
+     */
+    public function updateVotingPeriod(Request $request, $concursoId)
+    {
+        $request->validate([
+            'has_voting' => 'required|boolean',
+            'voting_starts_at' => 'nullable|date|after:now|required_if:has_voting,true',
+            'voting_ends_at' => 'nullable|date|after:voting_starts_at|required_if:has_voting,true',
+        ]);
+
+        try {
+            $concurso = Concurso::findOrFail($concursoId);
+
+            $concurso->has_voting = $request->has_voting;
+
+            if ($concurso->has_voting) {
+                $concurso->voting_starts_at = $request->voting_starts_at
+                    ? Carbon::parse($request->voting_starts_at)
+                    : null;
+                $concurso->voting_ends_at = $request->voting_ends_at
+                    ? Carbon::parse($request->voting_ends_at)
+                    : null;
+            } else {
+                // Se votação não está habilitada, limpar períodos
+                $concurso->voting_starts_at = null;
+                $concurso->voting_ends_at = null;
+            }
+
+            $concurso->save();
+
+            return response()->json([
+                'message' => 'Configuração de votação atualizada com sucesso.',
+                'concurso' => [
+                    'id' => $concurso->id,
+                    'title' => $concurso->title,
+                    'description' => $concurso->description,
+                    'place' => $concurso->place,
+                    'has_voting' => $concurso->has_voting,
+                    'voting_starts_at' => $concurso->voting_starts_at?->toDateTimeString(),
+                    'voting_ends_at' => $concurso->voting_ends_at?->toDateTimeString(),
+                ],
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Concurso não encontrado.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Erro ao atualizar configuração de votação.', 'error' => $e->getMessage()], 500);
+        }
     }
 }

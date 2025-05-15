@@ -125,7 +125,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [ProjetoController::class, 'update']);
         Route::delete('/{id}', [ProjetoController::class, 'destroy']);
         Route::post('/{id}/accept', [ProjetoController::class, 'accept']);
-
     });
 
     // Cursos
@@ -178,7 +177,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [QuestaoController::class, 'destroy']);
     });
 
-    Route::post('/concursos/{concursoId}/votar/{voterId}/{votedId}', [VoteController::class, 'votar']);
-    Route::get('/concursos/{concursoId}/votos', [VoteController::class, 'votos']);
-    Route::delete('/voto/{id}', [VoteController::class, 'destroy']);
+    // Votação em CONCURSO (usuários votando em outros usuários)
+    Route::post('/concursos/{concursoId}/votar/{voterId}/{votedId}', [VoteController::class, 'votarConcurso']);
+    Route::get('/concursos/{concursoId}/votos', [VoteController::class, 'votosConcurso']);
+    Route::get('/concursos-com-votos', [VoteController::class, 'concursosComVotos']);
+
+    // Votação em PROJETOS
+    Route::post('/projetos/{projectId}/votar/{voterId}', [VoteController::class, 'votarProjeto']);
+    Route::get('/projetos/{projectId}/votos', [VoteController::class, 'votosProjeto']);
+    Route::get('/projetos-com-votos', [VoteController::class, 'projetosComVotos']);
+
+    // Cancelar voto (em ambos os contextos)
+    Route::delete('/votos/{id}', [VoteController::class, 'destroy']);
+    // Gerenciar período de votação para concursos
+Route::patch('/concursos/{concursoId}/voting-period', [ConcursoController::class, 'updateVotingPeriod']);
+
+// Gerenciar período de votação para projetos
+Route::patch('/projetos/{projectId}/voting-period', [ProjetoController::class, 'updateVotingPeriod']);
 });

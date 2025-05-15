@@ -7,10 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Vote extends Model
 {
-    //
     use HasFactory;
 
-    protected $fillable = ['voterId', 'votedId', 'concursoId'];
+    protected $fillable = [
+        'voterId',
+        'votedId',
+        'concursoId',
+        'projectId',
+        'enabled',
+    ];
+
+    protected $casts = [
+        'enabled' => 'boolean',
+    ];
+
 
     public function voter()
     {
@@ -27,4 +37,8 @@ class Vote extends Model
         return $this->belongsTo(Concurso::class, 'concursoId');
     }
 
+    public function projeto()
+    {
+        return $this->belongsTo(Projeto::class, 'projectId');
+    }
 }
