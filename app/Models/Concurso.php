@@ -22,4 +22,8 @@ class Concurso extends Model
     {
         return $this->hasMany(Vote::class, 'concursoId');
     }
+    public function participants()
+    {
+        return $this->belongsToMany(User::class, 'concurso_user', 'concurso_id', 'user_id');
+    }
 }

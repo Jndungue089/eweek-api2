@@ -21,7 +21,9 @@ use Illuminate\Support\Facades\Route;
 | Rotas Públicas (sem autenticação)
 |--------------------------------------------------------------------------
 */
-
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok'], 200);
+});
 // Auth Routes
 Route::prefix('auth')->group(function () {
     Route::post('/register', [UserController::class, 'store'])->name('register');
@@ -179,7 +181,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Votação em CONCURSO (usuários votando em outros usuários)
     Route::post('/concursos/{concursoId}/votar/{voterId}/{votedId}', [VoteController::class, 'votarConcurso']);
-    Route::get('/concursos/{concursoId}/votos', [VoteController::class, 'votosConcurso']);
+    Route::get('/concursos/{concursoId}/votos', [VoteController::class, 'getVotos']);
     Route::get('/concursos-com-votos', [VoteController::class, 'concursosComVotos']);
 
     // Votação em PROJETOS
@@ -194,5 +196,5 @@ Route::patch('/concursos/{concursoId}/voting-period', [ConcursoController::class
 
 // Gerenciar período de votação para projetos
 Route::patch('/projetos/{projectId}/voting-period', [ProjetoController::class, 'updateVotingPeriod']);
-Route::get('/users/concursos/{concursoId}', [ConcursoController::class, 'getConcursoParticipants']);
+Route::get('/users/concursos/{concursoId}', [ConcursoController::class, 'getParticipants']);
 });

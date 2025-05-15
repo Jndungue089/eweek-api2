@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ConcursoController extends Controller
@@ -41,7 +42,10 @@ class ConcursoController extends Controller
 
     public function show($id)
     {
-        $concurso = Concurso::with('users')->findOrFail($id);
+        $cacheKey = 'concurso_' . $id;
+        $concurso = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($id) {
+            return Concurso::findOrFail($id);
+        });
         return response()->json($concurso);
     }
 
@@ -65,7 +69,7 @@ class ConcursoController extends Controller
         $concurso = Concurso::findOrFail($id);
         $concurso->delete();
         $user = $request->user();
-        $userConcurso = UserConcurso::where('concursoId', $id)->where('userId', $user->id )->get();
+        $userConcurso = UserConcurso::where('concursoId', $id)->where('userId', $user->id)->get();
         return response()->json(['message' => 'Concurso deletado com sucesso']);
     }
     /**
@@ -118,16 +122,29 @@ class ConcursoController extends Controller
         }
     }
     public function getConcursoParticipants($concursoId)
-{
-    try {
-        $users = DB::table('user_concursos')
-            ->where('concursoId', $concursoId)
-            ->join('users', 'user_concursos.userId', '=', 'users.id')
-            ->select('users.id', 'users.fullName', 'users.email', 'users.course', 'users.school')
-            ->get();
-        return response()->json(['users' => $users]);
-    } catch (Exception $e) {
-        return response()->json(['message' => 'Erro ao buscar participantes', 'error' => $e->getMessage()], 500);
+    {
+        try {
+            $users = DB::table('user_concursos')
+                ->where('concursoId', $concursoId)
+                ->join('users', 'user_concursos.userId', '=', 'users.id')
+                ->select('users.id', 'users.fullName', 'users.email', 'users.course', 'users.school')
+                ->get();
+            return response()->json(['users' => $users]);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Erro ao buscar participantes', 'error' => $e->getMessage()], 500);
+        }
     }
-}
+
+    public function getParticipants($id)
+    {
+        try {
+            $concurso = Concurso::findOrFail($id);
+            $users = $concurso->participants()->get(['id', 'fullName', 'email', 'phone', 'course', 'school']);
+            return response()->json(['users' => $users], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Concurso não encontrado'], 404);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Erro ao buscar participantes:'  . $e->getMessage()], 500);
+        }
+    }
 }

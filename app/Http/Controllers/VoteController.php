@@ -286,4 +286,15 @@ class VoteController extends Controller
             return response()->json(['message' => 'Erro ao cancelar voto.', 'error' => $e->getMessage()], 500);
         }
     }
+    public function getVotos($id)
+{
+    try {
+        $concurso = Concurso::findOrFail($id);
+        $votos = $concurso->votos()->get(['id', 'voter_id', 'voter_nome', 'voter_email', 'voted_id', 'voted_nome', 'voted_email', 'votado_em']);
+        return response()->json(['votantes' => $votos], 200);
+    } catch (\Exception $e) {
+        
+        return response()->json(['message' => 'Erro ao buscar votos: '. $e->getMessage()], 500);
+    }
+}
 }
