@@ -30,6 +30,7 @@ class ConcursoController extends Controller
             'description' => 'required|string|max:255',
             'place' => 'required|string|max:255',
             'has_voting' => 'sometimes|boolean',
+            'is_voting_open' => 'sometimes|boolean',
             'voting_starts_at' => 'nullable|date|required_if:has_voting,true',
             'voting_ends_at' => 'nullable|date|after:voting_starts_at|required_if:has_voting,true',
         ]);
@@ -39,6 +40,7 @@ class ConcursoController extends Controller
             'description' => $validated['description'],
             'place' => $validated['place'],
             'has_voting' => $validated['has_voting'] ?? false,
+            'is_voting_open' => $validated['is_voting_open'] ?? false,
             'voting_starts_at' => $validated['voting_starts_at'] ?? null,
             'voting_ends_at' => $validated['voting_ends_at'] ?? null,
         ]);
@@ -64,6 +66,7 @@ class ConcursoController extends Controller
             'description' => 'required|string|max:255',
             'place' => 'required|string|max:255',
             'has_voting' => 'sometimes|boolean',
+            'is_voting_open' => 'sometimes|boolean',
             'voting_starts_at' => 'nullable|date|required_if:has_voting,true',
             'voting_ends_at' => 'nullable|date|after:voting_starts_at|required_if:has_voting,true',
         ]);
@@ -73,6 +76,7 @@ class ConcursoController extends Controller
             'description' => $validated['description'],
             'place' => $validated['place'],
             'has_voting' => $validated['has_voting'] ?? $concurso->has_voting,
+            'is_voting_open' => $validated['is_voting_open'] ?? $concurso->is_voting_open,
             'voting_starts_at' => $validated['voting_starts_at'] ?? $concurso->voting_starts_at,
             'voting_ends_at' => $validated['voting_ends_at'] ?? $concurso->voting_ends_at,
         ]);

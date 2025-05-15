@@ -11,12 +11,14 @@ class Concurso extends Model
         'description',
         'place',
         'has_voting',
+        'is_voting_open',
         'voting_starts_at',
         'voting_ends_at'
     ];
 
     protected $casts = [
         'has_voting' => 'boolean',
+        'is_voting_open' => 'boolean',
         'voting_starts_at' => 'datetime',
         'voting_ends_at' => 'datetime'
     ];

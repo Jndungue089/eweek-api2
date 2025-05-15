@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('concursos', function (Blueprint $table) {
-            $table->boolean('has_voting')->default(true)->after('place');
+            $table->boolean('has_voting')->default(false)->after('place');
+            $table->boolean('is_voting_open')->default(false)->after('has_voting');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('concursos', function (Blueprint $table) {
             $table->dropColumn('has_voting');
+            $table->dropColumn('is_voting_open');
         });
     }
 };
