@@ -84,31 +84,30 @@ class ProjetoController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            // Remove a foto anterior se existir
             if ($project->photo) {
                 Storage::disk('public')->delete(str_replace('/storage/', '', $project->photo));
             }
             $photoPath = $request->file('photo')->store('projects', 'public');
-            $project->photo = Storage::url($photoPath);
+            $validated['photo'] = Storage::url($photoPath);
         }
 
         $project->update([
             'name' => $validated['name'],
             'description' => $validated['description'],
             'equipments' => $validated['equipments'] ?? $project->equipments,
+            'photo' => $validated['photo'] ?? $project->photo,
             'accepted' => $validated['accepted'] ?? $project->accepted,
             'hasPrototype' => $validated['hasPrototype'] ?? $project->hasPrototype,
-            'voting_starts_at' => $validated['voting_starts_at'] ?? $project->voting_starts_at,
-            'voting_ends_at' => $validated['voting_ends_at'] ?? $project->voting_ends_at,
+            'voting_starts_at' => $validated['voting_starts_at'] ? Carbon::parse($validated['voting_starts_at'])->toDateTimeString() : $project->voting_starts_at,
+            'voting_ends_at' => $validated['voting_ends_at'] ? Carbon::parse($validated['voting_ends_at'])->toDateTimeString() : $project->voting_ends_at,
         ]);
 
         $project->persons()->sync($validated['persons']);
 
-        // Limpa o cache
         Cache::forget('projeto_' . $id);
 
         return response()->json([
-            'message' => 'Projeto atualizado com sucesso!', 
+            'message' => 'Projeto atualizado com sucesso!',
             'project' => $project->fresh()->load('persons')
         ]);
     }
