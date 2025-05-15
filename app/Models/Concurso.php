@@ -24,6 +24,6 @@ class Concurso extends Model
     }
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'concurso_user', 'concurso_id', 'user_id');
+        return $this->belongsToMany(User::class, 'user_concursos', 'concursoId', 'userId');
     }
 }

@@ -139,12 +139,21 @@ class ConcursoController extends Controller
     {
         try {
             $concurso = Concurso::findOrFail($id);
-            $users = $concurso->participants()->get(['id', 'fullName', 'email', 'phone', 'course', 'school']);
+            $users = Cache::remember("participantes_concurso_$id", now()->addMinutes(10), function () use ($concurso) {
+                return $concurso->participants()->get([
+                    'users.id',
+                    'users.fullName',
+                    'users.email',
+                    'users.phone',
+                    'users.course',
+                    'users.school',
+                ]);
+            });
             return response()->json(['users' => $users], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Concurso não encontrado'], 404);
         } catch (Exception $e) {
-            return response()->json(['message' => 'Erro ao buscar participantes:'  . $e->getMessage()], 500);
+            return response()->json(['message' => 'Erro ao buscar participantes: ' . $e->getMessage()], 500);
         }
     }
 }
