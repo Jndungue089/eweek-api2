@@ -16,11 +16,15 @@ class Projeto extends Model
         'equipments',
         'accepted',
         'hasPrototype',
+        'voting_starts_at',
+        'voting_ends_at'
     ];
 
     protected $casts = [
         'accepted' => 'boolean',
         'hasPrototype' => 'boolean',
+        'voting_starts_at' => 'datetime',
+        'voting_ends_at' => 'datetime'
     ];
 
     public function persons()

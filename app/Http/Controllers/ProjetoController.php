@@ -6,6 +6,7 @@ use App\Models\Projeto;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class ProjetoController extends Controller
@@ -29,6 +30,8 @@ class ProjetoController extends Controller
             'equipments' => 'nullable|string',
             'accepted' => 'boolean',
             'hasPrototype' => 'boolean',
+            'voting_starts_at' => 'nullable|date|after:now',
+            'voting_ends_at' => 'nullable|date|after:voting_starts_at',
             'persons' => 'required|array|max:4',
             'persons.*' => 'integer|exists:users,id',
         ]);
@@ -45,6 +48,8 @@ class ProjetoController extends Controller
             'equipments' => $validated['equipments'] ?? null,
             'accepted' => $validated['accepted'] ?? false,
             'hasPrototype' => $validated['hasPrototype'] ?? false,
+            'voting_starts_at' => $validated['voting_starts_at'] ?? null,
+            'voting_ends_at' => $validated['voting_ends_at'] ?? null,
         ]);
 
         $project->persons()->attach($validated['persons']);
@@ -72,13 +77,17 @@ class ProjetoController extends Controller
             'equipments' => 'nullable|string',
             'accepted' => 'boolean',
             'hasPrototype' => 'boolean',
+            'voting_starts_at' => 'nullable|date',
+            'voting_ends_at' => 'nullable|date|after:voting_starts_at',
             'persons' => 'required|array|max:4',
             'persons.*' => 'integer|exists:users,id',
         ]);
 
         if ($request->hasFile('photo')) {
-            // Se quiser apagar a anterior, adicione:
-            // Storage::disk('public')->delete(str_replace('/storage/', '', $project->photo));
+            // Remove a foto anterior se existir
+            if ($project->photo) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $project->photo));
+            }
             $photoPath = $request->file('photo')->store('projects', 'public');
             $project->photo = Storage::url($photoPath);
         }
@@ -86,14 +95,22 @@ class ProjetoController extends Controller
         $project->update([
             'name' => $validated['name'],
             'description' => $validated['description'],
-            'equipments' => $validated['equipments'] ?? null,
+            'equipments' => $validated['equipments'] ?? $project->equipments,
             'accepted' => $validated['accepted'] ?? $project->accepted,
             'hasPrototype' => $validated['hasPrototype'] ?? $project->hasPrototype,
+            'voting_starts_at' => $validated['voting_starts_at'] ?? $project->voting_starts_at,
+            'voting_ends_at' => $validated['voting_ends_at'] ?? $project->voting_ends_at,
         ]);
 
         $project->persons()->sync($validated['persons']);
 
-        return response()->json(['message' => 'Projeto atualizado com sucesso!', 'project' => $project->load('persons')]);
+        // Limpa o cache
+        Cache::forget('projeto_' . $id);
+
+        return response()->json([
+            'message' => 'Projeto atualizado com sucesso!', 
+            'project' => $project->fresh()->load('persons')
+        ]);
     }
 
     public function destroy($id)
@@ -136,14 +153,12 @@ class ProjetoController extends Controller
 
             $projeto->save();
 
+            // Limpa o cache
+            Cache::forget('projeto_' . $projectId);
+
             return response()->json([
                 'message' => 'Período de votação atualizado com sucesso.',
-                'projeto' => [
-                    'id' => $projeto->id,
-                    'name' => $projeto->name,
-                    'voting_starts_at' => $projeto->voting_starts_at?->toDateTimeString(),
-                    'voting_ends_at' => $projeto->voting_ends_at?->toDateTimeString(),
-                ],
+                'projeto' => $projeto->fresh()
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Projeto não encontrado.'], 404);

@@ -9,7 +9,16 @@ class Concurso extends Model
     protected $fillable = [
         'title',
         'description',
-        'place'
+        'place',
+        'has_voting',
+        'voting_starts_at',
+        'voting_ends_at'
+    ];
+
+    protected $casts = [
+        'has_voting' => 'boolean',
+        'voting_starts_at' => 'datetime',
+        'voting_ends_at' => 'datetime'
     ];
 
     public function users()

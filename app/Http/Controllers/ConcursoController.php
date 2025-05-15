@@ -29,15 +29,21 @@ class ConcursoController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'place' => 'required|string|max:255',
+            'has_voting' => 'sometimes|boolean',
+            'voting_starts_at' => 'nullable|date|required_if:has_voting,true',
+            'voting_ends_at' => 'nullable|date|after:voting_starts_at|required_if:has_voting,true',
         ]);
-
+    
         $concurso = Concurso::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'place' => $validated['place'],
+            'has_voting' => $validated['has_voting'] ?? false,
+            'voting_starts_at' => $validated['voting_starts_at'] ?? null,
+            'voting_ends_at' => $validated['voting_ends_at'] ?? null,
         ]);
-
-        return response()->json(['message' => 'Concurso criado com sucesso!', "concurso" => $concurso], 202);
+    
+        return response()->json(['message' => 'Concurso criado com sucesso!', "concurso" => $concurso], 201);
     }
 
     public function show($id)
@@ -52,18 +58,34 @@ class ConcursoController extends Controller
     public function update(Request $request, $id)
     {
         $concurso = Concurso::findOrFail($id);
+        
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'place' => 'required|string|max:255',
+            'has_voting' => 'sometimes|boolean',
+            'voting_starts_at' => 'nullable|date|required_if:has_voting,true',
+            'voting_ends_at' => 'nullable|date|after:voting_starts_at|required_if:has_voting,true',
         ]);
-        $concurso->update(array_filter([
+    
+        $concurso->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'place' => $validated['place'],
-        ]));
-        return response()->json(['message' => 'Concurso atualizdado com sucesso!', 'concurso' => $concurso]);
+            'has_voting' => $validated['has_voting'] ?? $concurso->has_voting,
+            'voting_starts_at' => $validated['voting_starts_at'] ?? $concurso->voting_starts_at,
+            'voting_ends_at' => $validated['voting_ends_at'] ?? $concurso->voting_ends_at,
+        ]);
+    
+        // Limpa o cache após atualização
+        Cache::forget('concurso_' . $id);
+    
+        return response()->json([
+            'message' => 'Concurso atualizado com sucesso!', 
+            'concurso' => $concurso->fresh()
+        ]);
     }
+    
     public function destroy(Request $request, $id)
     {
         $concurso = Concurso::findOrFail($id);
