@@ -43,16 +43,6 @@ class VoteController extends Controller
                 return response()->json(['message' => 'A votação já encerrou.'], 403);
             }
 
-            // Verificar se o votante está inscrito no concurso
-            $isVoterInscrito = DB::table('user_concursos')
-                ->where('userId', $voterId)
-                ->where('concursoId', $concursoId)
-                ->exists();
-
-            if (!$isVoterInscrito) {
-                return response()->json(['message' => 'Você não está inscrito neste concurso.'], 403);
-            }
-
             // Verificar se o votado está inscrito no concurso
             $isVotedInscrito = DB::table('user_concursos')
                 ->where('userId', $votedId)
