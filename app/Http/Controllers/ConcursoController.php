@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Concurso;
 use App\Models\UserConcurso;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConcursoController extends Controller
 {
@@ -115,4 +117,17 @@ class ConcursoController extends Controller
             return response()->json(['message' => 'Erro ao atualizar configuração de votação.', 'error' => $e->getMessage()], 500);
         }
     }
+    public function getConcursoParticipants($concursoId)
+{
+    try {
+        $users = DB::table('user_concursos')
+            ->where('concursoId', $concursoId)
+            ->join('users', 'user_concursos.userId', '=', 'users.id')
+            ->select('users.id', 'users.fullName', 'users.email', 'users.course', 'users.school')
+            ->get();
+        return response()->json(['users' => $users]);
+    } catch (Exception $e) {
+        return response()->json(['message' => 'Erro ao buscar participantes', 'error' => $e->getMessage()], 500);
+    }
+}
 }

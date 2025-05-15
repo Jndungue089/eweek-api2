@@ -194,4 +194,5 @@ Route::patch('/concursos/{concursoId}/voting-period', [ConcursoController::class
 
 // Gerenciar período de votação para projetos
 Route::patch('/projetos/{projectId}/voting-period', [ProjetoController::class, 'updateVotingPeriod']);
+Route::get('/users/concursos/{concursoId}', [ConcursoController::class, 'getConcursoParticipants']);
 });
