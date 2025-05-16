@@ -277,22 +277,21 @@ class VoteController extends Controller
             return response()->json(['message' => 'Erro ao cancelar voto.', 'error' => $e->getMessage()], 500);
         }
     }
-    public function getVotos($id)
+       public function getVotos($id)
     {
         try {
             $concurso = Concurso::findOrFail($id);
-            // Usar cache para reduzir carga
-            $votos = Cache::remember("votos_concurso_$id", now()->addMinutes(10), function () use ($concurso) {
-                return $concurso->votos()
-                    ->with(['voter' => function ($query) {
-                        $query->select('id', 'fullName', 'email');
-                    }, 'votedUser' => function ($query) {
-                        $query->select('id', 'fullName', 'email');
-                    }])
-                    ->get(['id', 'voterId', 'votedId', 'concursoId', 'created_at']);
-            });
+            
+            // Fetch votes directly from the database
+            $votos = $concurso->votos()
+                ->with(['voter' => function ($query) {
+                    $query->select('id', 'fullName', 'email');
+                }, 'votedUser' => function ($query) {
+                    $query->select('id', 'fullName', 'email');
+                }])
+                ->get(['id', 'voterId', 'votedId', 'concursoId', 'created_at']);
 
-            // Mapear os dados para corresponder à estrutura esperada pelo frontend
+            // Map data to match frontend structure
             $votantes = $votos->map(function ($voto) {
                 return [
                     'id' => $voto->id,
@@ -302,14 +301,16 @@ class VoteController extends Controller
                     'voted_id' => $voto->votedId,
                     'voted_nome' => $voto->votedUser ? $voto->votedUser->fullName : 'Desconhecido',
                     'voted_email' => $voto->votedUser ? $voto->votedUser->email : 'N/A',
-                    'votado_em' => $voto->created_at->toIso8601String(), // Usar created_at como votado_em
+                    'votado_em' => $voto->created_at->toIso8601String(),
                 ];
             });
 
             return response()->json(['votantes' => $votantes], 200);
         } catch (ModelNotFoundException $e) {
+            
             return response()->json(['message' => 'Concurso não encontrado'], 404);
         } catch (Exception $e) {
+            
             return response()->json(['message' => 'Erro ao buscar votos: ' . $e->getMessage()], 500);
         }
     }
