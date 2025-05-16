@@ -14,3 +14,6 @@ php artisan storage:link
 echo "Running migrations..."
 php artisan migrate
 php artisan key:generate
+
+php artisan make:job ProcessUserData
+
